@@ -1,0 +1,8 @@
+- id: securecommit
+  name: SecureCommit Security Scanner
+  description: Scan staged files for secrets, credentials, and security anti-patterns.
+  entry: securecommit hook
+  language: python
+  types: [text]
+  stages: [pre-commit]
+  require_serial: true

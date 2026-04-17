@@ -1,0 +1,83 @@
+name: "SecureCommit Security Scan"
+description: "Scan PR diffs and code for secrets, credentials, and security anti-patterns."
+author: "Joe Munene"
+
+branding:
+  icon: "shield"
+  color: "red"
+
+inputs:
+  severity_threshold:
+    description: "Minimum severity to fail on (info, low, medium, high, critical)"
+    required: false
+    default: "high"
+  config_file:
+    description: "Path to .securecommit.yaml config file"
+    required: false
+    default: ""
+  sarif_output:
+    description: "Path to write SARIF output for GitHub Code Scanning"
+    required: false
+    default: "securecommit.sarif"
+  scan_mode:
+    description: "Scan mode: 'diff' for PR diff only, 'full' for entire workspace"
+    required: false
+    default: "diff"
+
+outputs:
+  findings_count:
+    description: "Total number of findings"
+    value: ${{ steps.scan.outputs.findings_count }}
+  passed:
+    description: "Whether the scan passed (true/false)"
+    value: ${{ steps.scan.outputs.passed }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.12"
+
+    - name: Install SecureCommit
+      shell: bash
+      run: pip install "${{ github.action_path }}"
+
+    - name: Run SecureCommit Scan
+      id: scan
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+        PR_NUMBER: ${{ github.event.pull_request.number }}
+      run: |
+        ARGS="scan ${{ github.workspace }}"
+        ARGS="$ARGS --severity ${{ inputs.severity_threshold }}"
+        ARGS="$ARGS --format sarif"
+        ARGS="$ARGS --output ${{ inputs.sarif_output }}"
+
+        if [ -n "${{ inputs.config_file }}" ]; then
+          ARGS="$ARGS --config ${{ inputs.config_file }}"
+        fi
+
+        securecommit $ARGS || true
+
+        # Also produce markdown for PR comment
+        securecommit scan ${{ github.workspace }} \
+          --severity ${{ inputs.severity_threshold }} \
+          --format markdown \
+          --output /tmp/sc-comment.md || true
+
+        # Post PR comment if in a pull request context
+        if [ -n "${{ github.event.pull_request.number }}" ]; then
+          gh pr comment "${{ github.event.pull_request.number }}" \
+            --repo "${{ github.repository }}" \
+            --body-file /tmp/sc-comment.md || true
+        fi
+
+    - name: Upload SARIF
+      if: always()
+      uses: github/codeql-action/upload-sarif@v3
+      with:
+        sarif_file: ${{ inputs.sarif_output }}
+      continue-on-error: true

@@ -1,0 +1,13 @@
+severity_threshold: high
+detectors:
+  secrets: true
+  patterns: true
+  entropy: true
+allowlist:
+  - "test_*.py"
+  - "*.md"
+custom_patterns:
+  - name: "internal_token"
+    pattern: "INTERNAL_[A-Z0-9]{32}"
+    severity: critical
+    description: "Internal service token detected"
