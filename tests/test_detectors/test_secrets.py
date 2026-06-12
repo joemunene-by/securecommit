@@ -23,7 +23,9 @@ class TestAWSKeys:
         assert f.line_number == 1
         assert "AKIA" in f.snippet
 
-    def test_detects_aws_secret_key(self, detector: SecretDetector, aws_secret_snippet: str) -> None:
+    def test_detects_aws_secret_key(
+        self, detector: SecretDetector, aws_secret_snippet: str
+    ) -> None:
         findings = detector.scan(aws_secret_snippet, "config.py")
         assert len(findings) >= 1
         assert any(f.rule_id == "SC-S002" for f in findings)
@@ -35,20 +37,26 @@ class TestAWSKeys:
 
 
 class TestGitTokens:
-    def test_detects_github_token(self, detector: SecretDetector, github_token_snippet: str) -> None:
+    def test_detects_github_token(
+        self, detector: SecretDetector, github_token_snippet: str
+    ) -> None:
         findings = detector.scan(github_token_snippet, "env.py")
         assert len(findings) >= 1
         match = [f for f in findings if f.rule_id == "SC-S005"]
         assert len(match) == 1
         assert match[0].severity == Severity.CRITICAL
 
-    def test_detects_gitlab_token(self, detector: SecretDetector, gitlab_token_snippet: str) -> None:
+    def test_detects_gitlab_token(
+        self, detector: SecretDetector, gitlab_token_snippet: str
+    ) -> None:
         findings = detector.scan(gitlab_token_snippet, "env.py")
         assert any(f.rule_id == "SC-S006" for f in findings)
 
 
 class TestPrivateKeys:
-    def test_detects_rsa_private_key(self, detector: SecretDetector, private_key_snippet: str) -> None:
+    def test_detects_rsa_private_key(
+        self, detector: SecretDetector, private_key_snippet: str
+    ) -> None:
         findings = detector.scan(private_key_snippet, "key.pem")
         assert len(findings) >= 1
         assert findings[0].rule_id == "SC-S008"
@@ -61,7 +69,9 @@ class TestPrivateKeys:
 
 
 class TestDatabaseStrings:
-    def test_detects_postgres_url(self, detector: SecretDetector, db_connection_snippet: str) -> None:
+    def test_detects_postgres_url(
+        self, detector: SecretDetector, db_connection_snippet: str
+    ) -> None:
         findings = detector.scan(db_connection_snippet, "settings.py")
         assert any(f.rule_id == "SC-S009" for f in findings)
 
@@ -83,7 +93,9 @@ class TestJWTTokens:
 
 
 class TestWebhooksAndKeys:
-    def test_detects_slack_webhook(self, detector: SecretDetector, slack_webhook_snippet: str) -> None:
+    def test_detects_slack_webhook(
+        self, detector: SecretDetector, slack_webhook_snippet: str
+    ) -> None:
         findings = detector.scan(slack_webhook_snippet, "notify.py")
         assert any(f.rule_id == "SC-S011" for f in findings)
 
@@ -92,13 +104,17 @@ class TestWebhooksAndKeys:
         assert any(f.rule_id == "SC-S012" for f in findings)
         assert any(f.severity == Severity.CRITICAL for f in findings)
 
-    def test_detects_sendgrid_key(self, detector: SecretDetector, sendgrid_key_snippet: str) -> None:
+    def test_detects_sendgrid_key(
+        self, detector: SecretDetector, sendgrid_key_snippet: str
+    ) -> None:
         findings = detector.scan(sendgrid_key_snippet, "email.py")
         assert any(f.rule_id == "SC-S015" for f in findings)
 
 
 class TestHighEntropy:
-    def test_detects_generic_api_key(self, detector: SecretDetector, generic_api_key_snippet: str) -> None:
+    def test_detects_generic_api_key(
+        self, detector: SecretDetector, generic_api_key_snippet: str
+    ) -> None:
         findings = detector.scan(generic_api_key_snippet, "app.py")
         # Should match generic API key pattern SC-S007
         assert any(f.rule_id == "SC-S007" for f in findings)

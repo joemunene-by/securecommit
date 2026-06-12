@@ -48,9 +48,7 @@ def format_markdown(result: ScanResult) -> str:
         reverse=True,
     )
     for f in by_sev:
-        lines.append(
-            f"### [{f.severity.value.upper()}] {f.title} (`{f.rule_id}`)\n"
-        )
+        lines.append(f"### [{f.severity.value.upper()}] {f.title} (`{f.rule_id}`)\n")
         lines.append(f"**File:** `{f.file_path}` (line {f.line_number})\n")
         lines.append(f"```\n{f.snippet}\n```\n")
         lines.append(f"> {f.description}\n")
@@ -132,9 +130,7 @@ def _format_plain(result: ScanResult) -> str:
         return "SecureCommit: No security issues found.\n"
     lines = ["SecureCommit Scan Results", "=" * 60]
     for f in result.findings:
-        lines.append(
-            f"[{f.severity.value.upper()}] {f.rule_id}: {f.title}"
-        )
+        lines.append(f"[{f.severity.value.upper()}] {f.rule_id}: {f.title}")
         lines.append(f"  File: {f.file_path}:{f.line_number}")
         lines.append(f"  Snippet: {f.snippet[:80]}")
         lines.append(f"  Remediation: {f.remediation}")
@@ -162,53 +158,57 @@ def format_sarif(result: ScanResult) -> str:
         # Register rule if not already seen
         if finding.rule_id not in rule_index:
             rule_index[finding.rule_id] = len(rules)
-            rules.append({
-                "id": finding.rule_id,
-                "name": finding.title.replace(" ", ""),
-                "shortDescription": {"text": finding.title},
-                "fullDescription": {"text": finding.description},
-                "helpUri": "https://github.com/joemunene/securecommit",
-                "help": {
-                    "text": finding.remediation,
-                    "markdown": f"**Remediation:** {finding.remediation}",
-                },
-                "defaultConfiguration": {
-                    "level": _sarif_level(finding.severity),
-                },
-                "properties": {
-                    "tags": ["security"],
-                    "precision": "high" if finding.severity >= Severity.HIGH else "medium",
-                },
-            })
-
-        results_list.append({
-            "ruleId": finding.rule_id,
-            "ruleIndex": rule_index[finding.rule_id],
-            "level": _sarif_level(finding.severity),
-            "message": {
-                "text": f"{finding.title}: {finding.description}",
-            },
-            "locations": [
+            rules.append(
                 {
-                    "physicalLocation": {
-                        "artifactLocation": {
-                            "uri": finding.file_path,
-                            "uriBaseId": "%SRCROOT%",
-                        },
-                        "region": {
-                            "startLine": finding.line_number,
-                            "endLine": finding.end_line or finding.line_number,
-                            "snippet": {"text": finding.snippet},
-                        },
+                    "id": finding.rule_id,
+                    "name": finding.title.replace(" ", ""),
+                    "shortDescription": {"text": finding.title},
+                    "fullDescription": {"text": finding.description},
+                    "helpUri": "https://github.com/joemunene/securecommit",
+                    "help": {
+                        "text": finding.remediation,
+                        "markdown": f"**Remediation:** {finding.remediation}",
+                    },
+                    "defaultConfiguration": {
+                        "level": _sarif_level(finding.severity),
+                    },
+                    "properties": {
+                        "tags": ["security"],
+                        "precision": "high" if finding.severity >= Severity.HIGH else "medium",
                     },
                 }
-            ],
-            "fixes": [
-                {
-                    "description": {"text": finding.remediation},
-                }
-            ],
-        })
+            )
+
+        results_list.append(
+            {
+                "ruleId": finding.rule_id,
+                "ruleIndex": rule_index[finding.rule_id],
+                "level": _sarif_level(finding.severity),
+                "message": {
+                    "text": f"{finding.title}: {finding.description}",
+                },
+                "locations": [
+                    {
+                        "physicalLocation": {
+                            "artifactLocation": {
+                                "uri": finding.file_path,
+                                "uriBaseId": "%SRCROOT%",
+                            },
+                            "region": {
+                                "startLine": finding.line_number,
+                                "endLine": finding.end_line or finding.line_number,
+                                "snippet": {"text": finding.snippet},
+                            },
+                        },
+                    }
+                ],
+                "fixes": [
+                    {
+                        "description": {"text": finding.remediation},
+                    }
+                ],
+            }
+        )
 
     sarif: dict[str, Any] = {
         "$schema": "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/main/sarif-2.1/schema/sarif-schema-2.1.0.json",

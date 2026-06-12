@@ -89,9 +89,7 @@ class ScanResult:
         self.findings.append(finding)
         self.stats.findings_total += 1
         sev = finding.severity.value
-        self.stats.findings_by_severity[sev] = (
-            self.stats.findings_by_severity.get(sev, 0) + 1
-        )
+        self.stats.findings_by_severity[sev] = self.stats.findings_by_severity.get(sev, 0) + 1
 
     def evaluate(self, threshold: Severity) -> bool:
         """Determine pass/fail based on severity threshold."""

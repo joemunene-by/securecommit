@@ -12,18 +12,50 @@ from securecommit.detectors.base import BaseDetector
 from securecommit.detectors.entropy import EntropyDetector
 from securecommit.detectors.patterns import SecurityPatternDetector
 from securecommit.detectors.secrets import SecretDetector, SecretPattern
-from securecommit.models import Finding, ScanResult, Severity
+from securecommit.models import Finding, ScanResult
 
 # Binary / large file extensions to skip
 BINARY_EXTENSIONS = {
-    ".png", ".jpg", ".jpeg", ".gif", ".bmp", ".ico", ".svg",
-    ".woff", ".woff2", ".ttf", ".eot", ".otf",
-    ".zip", ".tar", ".gz", ".bz2", ".xz", ".7z",
-    ".exe", ".dll", ".so", ".dylib", ".bin",
-    ".pdf", ".doc", ".docx", ".xls", ".xlsx",
-    ".pyc", ".pyo", ".class", ".o", ".obj",
-    ".mp3", ".mp4", ".wav", ".avi", ".mov",
-    ".sqlite", ".db",
+    ".png",
+    ".jpg",
+    ".jpeg",
+    ".gif",
+    ".bmp",
+    ".ico",
+    ".svg",
+    ".woff",
+    ".woff2",
+    ".ttf",
+    ".eot",
+    ".otf",
+    ".zip",
+    ".tar",
+    ".gz",
+    ".bz2",
+    ".xz",
+    ".7z",
+    ".exe",
+    ".dll",
+    ".so",
+    ".dylib",
+    ".bin",
+    ".pdf",
+    ".doc",
+    ".docx",
+    ".xls",
+    ".xlsx",
+    ".pyc",
+    ".pyo",
+    ".class",
+    ".o",
+    ".obj",
+    ".mp3",
+    ".mp4",
+    ".wav",
+    ".avi",
+    ".mov",
+    ".sqlite",
+    ".db",
 }
 
 
@@ -43,7 +75,7 @@ class Scanner:
                 extra.append(
                     SecretPattern(
                         name=cp.name,
-                        rule_id=f"SC-C{len(extra)+1:03d}",
+                        rule_id=f"SC-C{len(extra) + 1:03d}",
                         regex=re.compile(cp.pattern),
                         severity=cp.severity,
                         description=cp.description or f"Custom pattern: {cp.name}",
@@ -101,10 +133,7 @@ class Scanner:
         for root, dirs, files in os.walk(directory):
             root_path = Path(root)
             # Prune excluded directories (in-place)
-            dirs[:] = [
-                d for d in dirs
-                if not self.config.is_dir_excluded(str(root_path / d))
-            ]
+            dirs[:] = [d for d in dirs if not self.config.is_dir_excluded(str(root_path / d))]
             for fname in files:
                 fpath = root_path / fname
                 if not self._should_scan(fpath):

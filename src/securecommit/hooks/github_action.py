@@ -59,9 +59,14 @@ def post_pr_comment(body: str) -> None:
     try:
         subprocess.run(
             [
-                "gh", "pr", "comment", pr_number,
-                "--repo", repo,
-                "--body", body,
+                "gh",
+                "pr",
+                "comment",
+                pr_number,
+                "--repo",
+                repo,
+                "--body",
+                body,
             ],
             check=True,
             env={**os.environ, "GH_TOKEN": token},

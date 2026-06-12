@@ -37,8 +37,16 @@ class Config:
     entropy_threshold: float = 4.5
     exclude_dirs: list[str] = field(
         default_factory=lambda: [
-            ".git", "__pycache__", "node_modules", ".venv", "venv",
-            ".tox", ".mypy_cache", ".pytest_cache", "dist", "build",
+            ".git",
+            "__pycache__",
+            "node_modules",
+            ".venv",
+            "venv",
+            ".tox",
+            ".mypy_cache",
+            ".pytest_cache",
+            "dist",
+            "build",
         ]
     )
 

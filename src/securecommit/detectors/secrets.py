@@ -59,7 +59,7 @@ SECRET_PATTERNS: list[SecretPattern] = [
         name="Azure Secret / Connection String",
         rule_id="SC-S004",
         regex=re.compile(
-            r"(?i)(?:AccountKey|SharedAccessKey|client_secret)\s*[=:]\s*['\""]?([A-Za-z0-9+/=]{32,})['\""]?"
+            r"""(?i)(?:AccountKey|SharedAccessKey|client_secret)\s*[=:]\s*["']?([A-Za-z0-9+/=]{32,})["']?"""
         ),
         severity=Severity.HIGH,
         description="Azure shared access key or client secret detected.",
@@ -107,9 +107,7 @@ SECRET_PATTERNS: list[SecretPattern] = [
     SecretPattern(
         name="Database Connection String",
         rule_id="SC-S009",
-        regex=re.compile(
-            r"(?:postgres(?:ql)?|mysql|mongodb(?:\+srv)?|redis|amqp)://[^\s'\"]{8,}"
-        ),
+        regex=re.compile(r"(?:postgres(?:ql)?|mysql|mongodb(?:\+srv)?|redis|amqp)://[^\s'\"]{8,}"),
         severity=Severity.HIGH,
         description="A database connection string with potential credentials was detected.",
         remediation="Use environment variables for connection strings. Never embed credentials in code.",
@@ -153,9 +151,7 @@ SECRET_PATTERNS: list[SecretPattern] = [
     SecretPattern(
         name="Twilio Auth Token",
         rule_id="SC-S014",
-        regex=re.compile(
-            r"""(?i)twilio[_-]?auth[_-]?token\s*[=:]\s*['"]([a-f0-9]{32})['"]"""
-        ),
+        regex=re.compile(r"""(?i)twilio[_-]?auth[_-]?token\s*[=:]\s*['"]([a-f0-9]{32})['"]"""),
         severity=Severity.HIGH,
         description="Twilio authentication token detected.",
         remediation="Rotate the token in the Twilio console and use environment variables.",

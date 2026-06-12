@@ -62,6 +62,21 @@ line-length = 100
 select = ["E", "F", "W", "I", "N", "UP", "S", "B"]
 ignore = ["S101"]  # allow assert in tests
 
+[tool.ruff.lint.per-file-ignores]
+# Typer declares CLI options via function calls in argument defaults; that is
+# the framework's intended idiom, not the bug B008 warns about.
+"src/securecommit/cli.py" = ["B008"]
+# The git hooks legitimately shell out to `git` by name. S607 (partial path)
+# is intentional for portability and S603 fires on every subprocess call.
+"src/securecommit/hooks/*" = ["S603", "S607"]
+# These two files are pattern registries: tables of regexes plus human-readable
+# description/remediation prose. Wrapping that prose to 100 cols hurts more than
+# it helps, so E501 is relaxed here only.
+"src/securecommit/detectors/patterns.py" = ["E501"]
+"src/securecommit/detectors/secrets.py" = ["E501"]
+# Test fixtures embed sample secret strings (e.g. a JWT) that cannot be wrapped.
+"tests/conftest.py" = ["E501"]
+
 [tool.mypy]
 python_version = "3.10"
 strict = true

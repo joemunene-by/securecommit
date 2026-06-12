@@ -47,10 +47,7 @@ class AllowlistManager:
     def is_file_allowlisted(self, filepath: str) -> bool:
         """Check if a file matches any allowlist file pattern."""
         name = Path(filepath).name
-        return any(
-            fnmatch(name, pat) or fnmatch(filepath, pat)
-            for pat in self._file_patterns
-        )
+        return any(fnmatch(name, pat) or fnmatch(filepath, pat) for pat in self._file_patterns)
 
     def is_rule_suppressed(self, rule_id: str) -> bool:
         """Check if a rule ID is globally suppressed."""

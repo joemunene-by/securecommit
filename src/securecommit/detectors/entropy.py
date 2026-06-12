@@ -25,8 +25,17 @@ TOKEN_PATTERNS = [
 
 # Context keywords that raise suspicion
 CONTEXT_KEYWORDS = [
-    "key", "token", "secret", "password", "passwd", "credential",
-    "api_key", "apikey", "auth", "private", "access_key",
+    "key",
+    "token",
+    "secret",
+    "password",
+    "passwd",
+    "credential",
+    "api_key",
+    "apikey",
+    "auth",
+    "private",
+    "access_key",
 ]
 
 

@@ -28,9 +28,7 @@ class TestSQLInjection:
 
 
 class TestXSS:
-    def test_detects_innerhtml(
-        self, detector: SecurityPatternDetector, xss_innerhtml: str
-    ) -> None:
+    def test_detects_innerhtml(self, detector: SecurityPatternDetector, xss_innerhtml: str) -> None:
         findings = detector.scan(xss_innerhtml, "app.js")
         assert any(f.rule_id == "SC-P003" for f in findings)
 
@@ -89,14 +87,12 @@ class TestHardcodedCredentials:
 
 
 class TestInsecureCrypto:
-    def test_detects_md5(
-        self, detector: SecurityPatternDetector, md5_hash_snippet: str
-    ) -> None:
+    def test_detects_md5(self, detector: SecurityPatternDetector, md5_hash_snippet: str) -> None:
         findings = detector.scan(md5_hash_snippet, "auth.py")
         assert any(f.rule_id == "SC-P011" for f in findings)
 
     def test_detects_ecb_mode(self, detector: SecurityPatternDetector) -> None:
-        content = 'cipher = AES.new(key, AES.MODE_ECB)'
+        content = "cipher = AES.new(key, AES.MODE_ECB)"
         findings = detector.scan(content, "crypto.py")
         assert any(f.rule_id == "SC-P013" for f in findings)
 

@@ -42,9 +42,7 @@ CODE_PATTERNS: list[CodePattern] = [
     CodePattern(
         name="SQL Injection (string concatenation with +)",
         rule_id="SC-P002",
-        regex=re.compile(
-            r"""(?i)(?:SELECT|INSERT|UPDATE|DELETE)\s+.*['"]\s*\+\s*\w+"""
-        ),
+        regex=re.compile(r"""(?i)(?:SELECT|INSERT|UPDATE|DELETE)\s+.*['"]\s*\+\s*\w+"""),
         severity=Severity.HIGH,
         description="SQL query built via string concatenation with +.",
         remediation="Use parameterized queries or an ORM instead of string concatenation.",

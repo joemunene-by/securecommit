@@ -5,7 +5,6 @@ from __future__ import annotations
 import sys
 from enum import Enum
 from pathlib import Path
-from typing import Optional
 
 import typer
 
@@ -43,20 +42,33 @@ def _output(result: ScanResult, fmt: OutputFormat) -> str:
 @app.command()
 def scan(
     path: Path = typer.Argument(
-        ..., help="File or directory to scan.", exists=True,
+        ...,
+        help="File or directory to scan.",
+        exists=True,
     ),
-    config: Optional[Path] = typer.Option(
-        None, "--config", "-c", help="Path to .securecommit.yaml config file.",
+    config: Path | None = typer.Option(
+        None,
+        "--config",
+        "-c",
+        help="Path to .securecommit.yaml config file.",
     ),
     fmt: OutputFormat = typer.Option(
-        OutputFormat.console, "--format", "-f", help="Output format.",
+        OutputFormat.console,
+        "--format",
+        "-f",
+        help="Output format.",
     ),
     severity: str = typer.Option(
-        "high", "--severity", "-s",
+        "high",
+        "--severity",
+        "-s",
         help="Minimum severity to report (info, low, medium, high, critical).",
     ),
-    output_file: Optional[Path] = typer.Option(
-        None, "--output", "-o", help="Write output to file instead of stdout.",
+    output_file: Path | None = typer.Option(
+        None,
+        "--output",
+        "-o",
+        help="Write output to file instead of stdout.",
     ),
 ) -> None:
     """Scan a file or directory for security issues."""
@@ -92,15 +104,23 @@ def hook() -> None:
 
 @app.command()
 def review(
-    diff_file: Optional[Path] = typer.Option(
-        None, "--diff", "-d",
+    diff_file: Path | None = typer.Option(
+        None,
+        "--diff",
+        "-d",
         help="Path to a diff file. If omitted, reads from stdin.",
     ),
-    config: Optional[Path] = typer.Option(
-        None, "--config", "-c", help="Path to .securecommit.yaml config file.",
+    config: Path | None = typer.Option(
+        None,
+        "--config",
+        "-c",
+        help="Path to .securecommit.yaml config file.",
     ),
     fmt: OutputFormat = typer.Option(
-        OutputFormat.markdown, "--format", "-f", help="Output format.",
+        OutputFormat.markdown,
+        "--format",
+        "-f",
+        help="Output format.",
     ),
 ) -> None:
     """Review a diff for security issues (for CI/GitHub Action use)."""

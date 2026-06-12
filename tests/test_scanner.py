@@ -32,9 +32,7 @@ def scanner_low_threshold() -> Scanner:
 
 
 class TestScanText:
-    def test_scan_vulnerable_text(
-        self, scanner: Scanner, vulnerable_file_content: str
-    ) -> None:
+    def test_scan_vulnerable_text(self, scanner: Scanner, vulnerable_file_content: str) -> None:
         result = scanner.scan_text(vulnerable_file_content, "vuln.py")
         assert result.stats.findings_total > 0
         assert result.stats.files_scanned == 1
@@ -51,9 +49,7 @@ class TestScanText:
         assert result.stats.findings_total == 0
         assert result.passed
 
-    def test_findings_have_metadata(
-        self, scanner: Scanner, vulnerable_file_content: str
-    ) -> None:
+    def test_findings_have_metadata(self, scanner: Scanner, vulnerable_file_content: str) -> None:
         result = scanner.scan_text(vulnerable_file_content, "vuln.py")
         for f in result.findings:
             assert f.line_number > 0
@@ -66,10 +62,7 @@ class TestScanText:
 class TestScanFile:
     def test_scan_example_file(self, scanner: Scanner, tmp_path: Path) -> None:
         vuln_file = tmp_path / "vuln.py"
-        vuln_file.write_text(
-            'AWS_KEY = "AKIAIOSFODNN7EXAMPLE"\n'
-            'password = "hunter2"\n'
-        )
+        vuln_file.write_text('AWS_KEY = "AKIAIOSFODNN7EXAMPLE"\npassword = "hunter2"\n')
         result = scanner.scan_file(vuln_file)
         assert result.stats.findings_total >= 2
         assert not result.passed
@@ -84,9 +77,7 @@ class TestScanFile:
 class TestScanDirectory:
     def test_scan_directory_finds_issues(self, scanner: Scanner, tmp_path: Path) -> None:
         (tmp_path / "app.py").write_text('password = "secret123"\n')
-        (tmp_path / "config.py").write_text(
-            'DB = "postgres://admin:pass@localhost/db"\n'
-        )
+        (tmp_path / "config.py").write_text('DB = "postgres://admin:pass@localhost/db"\n')
         (tmp_path / "clean.py").write_text("x = 1\n")
         result = scanner.scan_directory(tmp_path)
         assert result.stats.files_scanned == 3
@@ -156,9 +147,7 @@ class TestOutputFormats:
         assert "stats" in data
         assert isinstance(data["findings"], list)
 
-    def test_sarif_output_valid(
-        self, scanner: Scanner, vulnerable_file_content: str
-    ) -> None:
+    def test_sarif_output_valid(self, scanner: Scanner, vulnerable_file_content: str) -> None:
         result = scanner.scan_text(vulnerable_file_content, "vuln.py")
         output = format_sarif(result)
         sarif = json.loads(output)
@@ -179,9 +168,7 @@ class TestOutputFormats:
             assert "region" in loc
             assert loc["region"]["startLine"] > 0
 
-    def test_markdown_output(
-        self, scanner: Scanner, vulnerable_file_content: str
-    ) -> None:
+    def test_markdown_output(self, scanner: Scanner, vulnerable_file_content: str) -> None:
         result = scanner.scan_text(vulnerable_file_content, "vuln.py")
         output = format_markdown(result)
         assert "## SecureCommit Scan" in output
@@ -210,5 +197,7 @@ class TestCustomPatterns:
         scanner = Scanner(config=config)
         content = 'TOKEN = "INTERNAL_ABCDEFGHIJKLMNOPQRSTUVWXYZ012345"'
         result = scanner.scan_text(content, "app.py")
-        assert any("internal_token" in f.title.lower() or "custom" in f.rule_id.lower()
-                    for f in result.findings)
+        assert any(
+            "internal_token" in f.title.lower() or "custom" in f.rule_id.lower()
+            for f in result.findings
+        )
